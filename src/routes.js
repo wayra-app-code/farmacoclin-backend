@@ -55,4 +55,13 @@ router.get('/search', async (req, res) => {
 
 router.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+router.get('/debug-env', (_req, res) => {
+  const key = process.env.ANTHROPIC_API_KEY;
+  res.json({
+    hasKey: !!key,
+    keyStart: key ? key.substring(0, 10) + '...' : 'NOT SET',
+    keyLength: key ? key.length : 0,
+  });
+});
+
 module.exports = router;
