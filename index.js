@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const routes = require('./src/routes');
@@ -13,6 +13,8 @@ app.use('/api', routes);
 app.listen(PORT, () => {
   console.log(`Backend a correr em http://localhost:${PORT}`);
   if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('AVISO: ANTHROPIC_API_KEY não definida no .env');
+    console.warn('AVISO: ANTHROPIC_API_KEY nÃ£o definida no .env');
   }
 });
+
+// trigger redeploy 22:56:58
