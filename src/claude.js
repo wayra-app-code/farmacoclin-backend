@@ -25,7 +25,14 @@ Output (JSON array only):`;
   }
 }
 
-async function analyzeInteractions({ diseases, drugs, drugData, originalDrugs }) {
+const LANG_INSTRUCTIONS = {
+  pt: 'Responde em português europeu, de forma clara e estruturada.',
+  en: 'Respond in English, clearly and in a structured manner.',
+  fr: 'Réponds en français, de manière claire et structurée.',
+  es: 'Responde en español, de forma clara y estructurada.',
+};
+
+async function analyzeInteractions({ diseases, drugs, drugData, originalDrugs, language = 'pt' }) {
   const drugsWithData = drugData.filter((d) => d !== null);
   const drugsNotFound = drugs.filter(
     (name) => !drugData.find((d) => d?.name?.toLowerCase() === name.toLowerCase())
@@ -61,7 +68,7 @@ Por favor fornece:
 4. **Recomendações** — sugestões práticas para o médico
 5. **Nota** — lembra que esta análise é de apoio à decisão e não substitui o julgamento clínico
 
-Responde em português europeu, de forma clara e estruturada.`;
+${LANG_INSTRUCTIONS[language] || LANG_INSTRUCTIONS.pt}`;
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
@@ -72,7 +79,7 @@ Responde em português europeu, de forma clara e estruturada.`;
   return message.content[0].text;
 }
 
-async function suggestPrescription({ diseases, allergies, currentMeds }) {
+async function suggestPrescription({ diseases, allergies, currentMeds, language = 'pt' }) {
   const prompt = `És um assistente médico especializado em farmacologia clínica e medicina interna. O médico precisa de apoio para decidir a medicação mais adequada para um paciente.
 
 **Condições/doenças do paciente:**
@@ -91,7 +98,7 @@ Por favor fornece uma sugestão de prescrição estruturada com:
 5. **Monitorização recomendada** — análises, parâmetros ou consultas a agendar
 6. **Nota clínica** — lembra que esta sugestão é de apoio à decisão e o médico deve adaptar ao contexto individual do paciente
 
-Responde em português europeu, de forma clara, estruturada e baseada em evidência clínica atual.`;
+${LANG_INSTRUCTIONS[language] || LANG_INSTRUCTIONS.pt}`;
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',

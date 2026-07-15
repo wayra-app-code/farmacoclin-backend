@@ -5,7 +5,7 @@ const { analyzeInteractions, translateDrugsToEnglish, suggestPrescription } = re
 const router = express.Router();
 
 router.post('/analyze', async (req, res) => {
-  const { diseases, drugs } = req.body;
+  const { diseases, drugs, language } = req.body;
   if (!diseases?.length || !drugs?.length)
     return res.status(400).json({ error: 'Indica pelo menos uma doença e um medicamento.' });
   if (drugs.length > 15)
@@ -14,7 +14,7 @@ router.post('/analyze', async (req, res) => {
   try {
     const translatedDrugs = await translateDrugsToEnglish(drugs);
     const drugData = await Promise.all(translatedDrugs.map((drug) => getDrugInteractions(drug)));
-    const analysis = await analyzeInteractions({ diseases, drugs: translatedDrugs, originalDrugs: drugs, drugData });
+    const analysis = await analyzeInteractions({ diseases, drugs: translatedDrugs, originalDrugs: drugs, drugData, language });
 
     res.json({
       diseases, drugs, translatedDrugs, analysis,
@@ -30,12 +30,12 @@ router.post('/analyze', async (req, res) => {
 });
 
 router.post('/prescribe', async (req, res) => {
-  const { diseases, allergies, currentMeds } = req.body;
+  const { diseases, allergies, currentMeds, language } = req.body;
   if (!diseases?.length)
     return res.status(400).json({ error: 'Indica pelo menos uma doença ou condição.' });
 
   try {
-    const suggestion = await suggestPrescription({ diseases, allergies, currentMeds });
+    const suggestion = await suggestPrescription({ diseases, allergies, currentMeds, language });
     res.json({ diseases, allergies, currentMeds, suggestion });
   } catch (err) {
     console.error('Prescribe error:', err.message);
